@@ -23,3 +23,11 @@ Build a Bookstore API with:
 - Official Docs: https://fastapi.tiangolo.com/
 - Testing Guide: https://testdriven.io/blog/fastapi-crud/
 - Deployment: https://fastapi.tiangolo.com/deployment/
+
+---
+
+To launch application:
+
+```bash
+uvicorn src.main:app --reload
+```
