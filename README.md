@@ -31,3 +31,5 @@ To launch application:
 ```bash
 uvicorn src.main:app --reload
 ```
+
+Note that *uvicorn src.main:app* will not work on Windows OS due to psycopg limitations
