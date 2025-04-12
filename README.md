@@ -1,6 +1,8 @@
 # Bookstore-FastAPI
-It's a training project with purpose to master Python/FastAPI + PostgreSQL + SqlAlchemy ORM + Docker.
 
+This is a training project with the purpose to master **Python**, **FastAPI**, **PostgreSQL**, **SqlAlchemy ORM**, and **Docker**.
 
-deepseek-task branch - Task from deepseet to create book store API.
-beyond-crud branch - devoted to FastAPI Beyound CRUD free cource: https://jod35.github.io/fastapi-beyond-crud-docs/site/
+## Branches
+
+- **deepseek-task**: Task from Deepseek to create a book store API.
+- **beyond-crud**: Devoted to the [FastAPI Beyond CRUD](https://jod35.github.io/fastapi-beyond-crud-docs/site/) free course.
