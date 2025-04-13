@@ -7,6 +7,8 @@ from fastapi import FastAPI
 from src.db.init_db import create_tables
 from src.books.routes import book_router
 
+from src.auth.routes import auth_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -20,4 +22,5 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 app.include_router(book_router, prefix='/books', tags=["books"])
+app.include_router(auth_router, prefix='/auth', tags=['auth'])
 

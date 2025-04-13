@@ -47,4 +47,3 @@ async def create_tables():
                 print(f"Error executing command: {e}")
                 await aconn.rollback()
                 raise
-        
