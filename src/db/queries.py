@@ -1,4 +1,4 @@
-from psycopg import AsyncConnection
+from psycopg import rows
 
 from src.config import DB_CONFIG
 from src.db.core import get_db_connection
@@ -6,13 +6,15 @@ from src.db.core import get_db_connection
 
 async def get_user_by_email(email: str):
     async with get_db_connection(DB_CONFIG) as aconn:
-        async with aconn.cursor() as acur:
-            sql = f"""
+        # rows.dict_row to generate dictionary as a result of query
+        async with aconn.cursor(row_factory=rows.dict_row) as acur:
+            sql = """
                     SELECT email, hashed_password, money FROM users
-                    WHERE email = '{email}'
+                    WHERE email = %s
                 """
-            await acur.execute(sql)
-            return await acur.fetchone()
+            await acur.execute(sql, [email])
+            record = await acur.fetchone()
+            return dict(record) if record else None
 
 
 async def create_user(email: str, password_hash: str):

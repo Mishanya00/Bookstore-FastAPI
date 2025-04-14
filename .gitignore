@@ -3,6 +3,12 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+# vscode settings
+.vscode
+
+# pylintrc config
+.pylintrc
+
 # C extensions
 *.so
 

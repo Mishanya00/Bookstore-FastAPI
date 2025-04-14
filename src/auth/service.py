@@ -1,5 +1,7 @@
 import hashlib
 
+from fastapi import HTTPException, status
+
 from src.auth.schemas import UserRegisterSchema, UserSchema
 
 from src.db import queries
@@ -12,6 +14,4 @@ async def register_user(user: UserRegisterSchema):
 
 async def get_user(email: str) -> UserSchema | None:
     user_data = await queries.get_user_by_email(email)
-    print(user_data)
-    # user = UserSchema(user_data)
-    return user_data
+    return UserSchema(**user_data) if user_data else None

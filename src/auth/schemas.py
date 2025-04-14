@@ -12,5 +12,5 @@ class UserRegisterSchema(BaseModel):
 
 class UserSchema(BaseModel):
     email: str
-    password_hash: Annotated[str, Field(exclude=True)]
+    hashed_password: Annotated[str, Field(exclude=True)]
     money: float
