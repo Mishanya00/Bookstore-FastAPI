@@ -14,7 +14,7 @@ async def get_user_by_email(email: str):
                 """
             await acur.execute(sql, [email])
             record = await acur.fetchone()
-            return dict(record) if record else None
+            return record
 
 
 async def create_user(email: str, password_hash: str):

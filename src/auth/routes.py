@@ -2,8 +2,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, Body, Depends, HTTPException, status
 
-from src.auth.schemas import UserRegisterSchema
+from src.auth.schemas import UserFormSchema
 
+from src.auth.exceptions import UserExistError
 from src.auth import service
 from src.auth.dependencies import validate_email
 
@@ -12,17 +13,8 @@ auth_router = APIRouter()
 
 
 @auth_router.post("/register")
-async def register_user(user: Annotated[UserRegisterSchema, Body()]):
-    try:
-        await service.register_user(user)
-    except HTTPException:
-        raise
-    except Exception as e:
-        print(f"Server error: {e}")
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Internal server error",
-        ) from e
+async def register_user(user: Annotated[UserFormSchema, Body()]):
+    await service.register_user(user)
 
 
 @auth_router.get("/get_user/{email}")
