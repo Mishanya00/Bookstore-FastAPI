@@ -1,8 +1,9 @@
 import os
 from configparser import ConfigParser
+from dotenv import dotenv_values
 
 
-def load_config(filename='database.ini', section='postgresql'):
+def load_config(filename='database.ini', section='postgresql') -> dict:
     config_directory = os.path.dirname(__file__)
     filename = config_directory + '/' + filename
 
@@ -20,4 +21,10 @@ def load_config(filename='database.ini', section='postgresql'):
 
 
 DB_CONFIG = load_config()
-print("DB Config:", DB_CONFIG)
+
+args_env = dotenv_values()
+JWT_SECRET = args_env['JWT_SECRET']
+JWT_REFRESH_SECRET = args_env['REFRESH_JWT_SECRET']
+ALGORITHM = args_env['ALGORITHM']
+ACCESS_TOKEN_EXPIRE_MINUTES = args_env['ACCESS_TOKEN_EXPIRE_MINUTES']
+REFRESH_TOKEN_EXPIRE_MINUTES = args_env['REFRESH_TOKEN_EXPIRE_MINUTES']
