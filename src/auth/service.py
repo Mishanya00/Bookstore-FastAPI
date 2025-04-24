@@ -5,14 +5,10 @@ from psycopg.errors import UniqueViolation
 from fastapi import HTTPException, status
 import jwt
 
-from src.auth.exceptions import UserExistError
+from src.auth.exceptions import UserExistException, UserNotExistException, IncorrectCredentialsException
 from src.auth.schemas import UserFormSchema, UserSchema
 from src.db import queries
 from src.config import JWT_SECRET, JWT_REFRESH_SECRET, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES
-
-
-def verify_jwt(token: str, secret: str) -> dict:
-    return jwt.decode(token, secret, algorithms=[ALGORITHM])
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -29,11 +25,11 @@ def create_jwt(data: dict, expires_delta: timedelta, secret: str) -> str:
 
 
 def create_access_token(data: dict) -> str:
-    return create_jwt(data, ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SECRET)
+    return create_jwt(data, timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES), JWT_SECRET)
 
 
 def create_refresh_token(data: dict) -> str:
-    return create_jwt(data, REFRESH_TOKEN_EXPIRE_MINUTES, JWT_REFRESH_SECRET)
+    return create_jwt(data, timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES), JWT_REFRESH_SECRET)
 
 
 async def register_user(user: UserFormSchema):
@@ -42,7 +38,7 @@ async def register_user(user: UserFormSchema):
         await queries.create_user(user.email, hashed_password)
         return True
     except UniqueViolation as e:
-        raise UserExistError('User already exists') from e
+        raise UserExistException('User already exists') from e
 
 
 async def is_user_exist(email: str) -> bool:
@@ -54,14 +50,16 @@ async def is_user_exist(email: str) -> bool:
 
 async def get_user(email: str) -> UserSchema | None:
     user_data = await queries.get_user_by_email(email)
-    return UserSchema(**user_data) if user_data else None
+    if user_data is None:
+        raise UserNotExistException('User does not exist')
+    return UserSchema(**user_data)
 
 
 async def authenticate_user(email: str, password: str) -> UserSchema | None:
     # user_data = await queries.get_user_by_email(email)
     user = await get_user(email)
     if not user:
-        return None
+        raise UserNotExistException('User does not exist')
     if not verify_password(password, user.hashed_password):
-        return None
+        raise IncorrectCredentialsException('Incorrect password')
     return user
