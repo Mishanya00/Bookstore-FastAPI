@@ -1,12 +1,12 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Body, Depends, HTTPException, status
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 
 from src.auth.schemas import UserFormSchema, UserSchema, TokenSchema
 from fastapi.security import OAuth2PasswordRequestForm
 
 from src.auth import service
-from src.auth.dependencies import validate_email, get_current_user
+from src.auth.dependencies import get_current_user
 from src.exceptions import BaseAppException
 
 auth_router = APIRouter()
@@ -40,4 +40,4 @@ async def login_user(form_data: Annotated[OAuth2PasswordRequestForm, Depends()])
 
 @auth_router.get("/me")
 async def get_user(curr_user: Annotated[UserSchema, Depends(get_current_user)]):
-    pass
+    return curr_user

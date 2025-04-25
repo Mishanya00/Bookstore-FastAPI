@@ -2,7 +2,8 @@ from typing import Annotated
 
 from pydantic import BaseModel, Field
 
-from src.auth.dependencies import EMAIL_PATTERN
+
+EMAIL_PATTERN = r"\b[\w\-\.]+@(?:[\w-]+\.)+[\w\-]{2,4}\b"
 
 
 class UserFormSchema(BaseModel):

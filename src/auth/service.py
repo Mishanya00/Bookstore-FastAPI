@@ -1,5 +1,6 @@
 import hashlib
 from datetime import datetime, timedelta, timezone
+import re
 
 from psycopg.errors import UniqueViolation  
 from fastapi import HTTPException, status
@@ -11,10 +12,19 @@ from src.db import queries
 from src.config import JWT_SECRET, JWT_REFRESH_SECRET, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_MINUTES
 
 
+EMAIL_PATTERN = r"\b[\w\-\.]+@(?:[\w-]+\.)+[\w\-]{2,4}\b"
+
+
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     if hashlib.sha256(plain_password.encode()).hexdigest() == hashed_password:
         return True
     return False
+
+
+def validate_email(email: str) -> str:
+    if not re.fullmatch(EMAIL_PATTERN, email):
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="Invalid email format")
+    return email
 
 
 def create_jwt(data: dict, expires_delta: timedelta, secret: str) -> str:
@@ -22,6 +32,14 @@ def create_jwt(data: dict, expires_delta: timedelta, secret: str) -> str:
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, secret, algorithm=ALGORITHM)
+
+
+def decode_access_token(token: str) -> dict:
+    return dict(jwt.decode(token, JWT_SECRET, algorithms=[ALGORITHM]))
+
+
+def decode_refresh_token(token: str) -> dict:
+    return dict(jwt.decode(token, JWT_REFRESH_SECRET, algorithms=[ALGORITHM]))
 
 
 def create_access_token(data: dict) -> str:
